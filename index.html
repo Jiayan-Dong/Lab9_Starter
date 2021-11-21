@@ -30,6 +30,15 @@
       width: 240px;
     }
 
+    finish {
+      border: 1px solid gray;
+      display: block;
+      height: 18px;
+      margin-top: 5px;
+      padding: 5px;
+      width: 240px;
+    }
+
     main {
       width: 800px;
     }
@@ -65,6 +74,7 @@
         <button id="calculate">Calculate</button>
         <br />
         <output></output>
+        <finish></finish>
       </fieldset>
     </form>
 
@@ -87,21 +97,150 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "8301dbb2a71240888f2c1a36b31573a5"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                          
+  <script>
+    window.addEventListener('error', function (e) {
+    console.error('Global error found and catched! ' + e.message)
+    return false;
+    });
+    
+    class NoInputError extends Error {
+      constructor(message) {
+        super(message); // (1)
+        this.name = "NoInputError"; // (2)
+      }
+    }
+    
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
       let output = document.querySelector('output');
+      let finish = document.querySelector('finish');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      
+      try {
+        if(firstNum == "")  throw new NoInputError("first input is empty");
+        if(secondNum == "")  throw new NoInputError("second input is empty");
+        if(isNaN(firstNum)) throw "first input is not number";
+        if(isNaN(secondNum)) throw "second input is not number";
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        output.innerHTML = error;
+        console.error('Calculator error catched: ' + error);
+      } finally {
+        finish.innerHTML = `${firstNum} ${operator} ${secondNum}` + ' calculation finished'
+      }
+      
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+
+    // Console Log
+    errorBtns[0].addEventListener('click', e => {
+      console.log('Console Log');
+    });
+
+    // Console Error
+    errorBtns[1].addEventListener('click', e => {
+      console.error('Console Error');
+    });
+
+    // Console Count
+    errorBtns[2].addEventListener('click', e => {
+      console.count('Console Count');
+    });
+
+    // Console Warn
+    errorBtns[3].addEventListener('click', e => {
+      console.warn('Console Warn');
+    });
+
+    // Console Assert
+    errorBtns[4].addEventListener('click', e => {
+      const x = 5;
+      const y = 3;
+      const reason = 'Console Assert x is expected to be less than y';
+      console.assert(x < y, {x, y, reason});
+    });
+
+    // Console Clear
+    errorBtns[5].addEventListener('click', e => {
+      console.clear();
+    });
+
+    // Console Dir
+    errorBtns[6].addEventListener('click', e => {
+      console.dir(document.head);
+    });
+
+    // Console dirxml
+    errorBtns[7].addEventListener('click', e => {
+      console.dirxml(document);
+    });
+
+    // Console Group Start
+    errorBtns[8].addEventListener('click', e => {
+      console.group("Console Group Start");
+    });
+
+    // Console Group End
+    errorBtns[9].addEventListener('click', e => {
+      console.groupEnd("Console Group Start");
+      console.info("Console Group End");
+    });
+
+    // Console Table
+    errorBtns[10].addEventListener('click', e => {
+      let arr = new Array( {
+      first: 'a',
+      last: '1',
+      },{
+      first: 'b',
+      last: '2',
+      },{
+      first: 'c',
+      last: '3',
+      });
+      console.table(arr);
+    });
+
+    // Start Timer
+    errorBtns[11].addEventListener('click', e => {
+      console.time('Timer');
+    });
+
+    // End Timer
+    errorBtns[12].addEventListener('click', e => {
+      console.timeEnd('Timer');
+    });
+
+    // Console Trace
+    errorBtns[13].addEventListener('click', e => {
+      const first = () => { second(); };
+      const second = () => { third(); };
+      const third = () => { fourth(); };
+      const fourth = () => { console.trace(); };
+      first();
+    });
+
+    
+    // Trigger a Global Error
+    errorBtns[14].addEventListener('click', e => {
+      const cnt = 5;
+      cnt = 6;
+    });
   </script>
 </body>
 
